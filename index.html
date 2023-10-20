@@ -2,14 +2,30 @@
 <html>
   <head> </head>
   <body>
+    <div>Online Status: <span id="status"></span></div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var socket = io("http://localhost:3000");
-      socket.on("greeting", function (message) {
-        document.body.appendChild(document.createTextNode(message.greeting));
-        socket.emit("greeting-from-client", {
-          greeting: "Hello Server",
-        });
+      const socket = io("http://localhost:3000", {
+        transports: ["websocket"],
+      });
+      const HEALTH_PEEP_INTERVAL = 3;
+
+      let peepPoopDiff = 0;
+      const status = document.getElementById("status");
+      setInterval(() => {
+        if (peepPoopDiff > 0) {
+            status.textContent = "diconnected";
+            socket.disconnect();
+            socket.connect();
+        } else {
+            socket.emit("peep");
+            peepPoopDiff++;
+        }
+      }, HEALTH_PEEP_INTERVAL * 1000);
+
+      socket.on("poop", () => {
+        peepPoopDiff--;
+        status.textContent = "connected";
       });
     </script>
   </body>

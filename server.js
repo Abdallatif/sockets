@@ -19,10 +19,7 @@ server.listen(3000);
 const io = socketIO(server);
 
 io.on('connection', function (socket) {
-  socket.emit('greeting', {
-      greeting: 'Hello World'
-  });
-  socket.on('greeting-from-client', function (message) {
-    console.log(message);
+  socket.on('peep', function (message) {
+    socket.emit('poop');
   });
 });
